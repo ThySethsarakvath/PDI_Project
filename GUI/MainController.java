@@ -40,5 +40,17 @@ public class MainController {
         primaryStage.show();
     }
     
+    public Stage getPrimaryStage() {
+        return primaryStage;
+    }
+    
+    public void showAboutUsPage() {
+        AboutUsScreen aboutUsScreen = new AboutUsScreen(this);
+        Scene scene = aboutUsScreen.getScene();
+        primaryStage.setScene(scene);
+        primaryStage.setTitle("About Us");
+        primaryStage.show();
+    }
+    
     
 }
