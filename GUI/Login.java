@@ -3,6 +3,7 @@ package Controller;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -10,19 +11,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+
+import java.util.regex.Pattern;
 
 public class Login {
     private MainController controller;
@@ -106,25 +101,27 @@ public class Login {
         passwordField.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-font-family: 'K2D'; -fx-border-radius: 15px; -fx-background-radius: 15px; -fx-padding: 15px;");
         passwordField.setPrefWidth(250);
 
-        ImageView eyeIcon = new ImageView(new Image(
-                "https://cdn.builder.io/api/v1/image/assets/b13786b9631c451597743fcb810395dc/767d91c6e993f8d1642d20a34fd032c656869bf14b87dd6baec4aa5265bf6b50?apiKey=b13786b9631c451597743fcb810395dc&"
-        ));
-        eyeIcon.setFitWidth(24);
-        eyeIcon.setPreserveRatio(true);
+        // Show Password Hyperlink
+        Hyperlink showPasswordLink = new Hyperlink("Show Password");
+        showPasswordLink.setStyle("-fx-text-fill: #007bff; -fx-font-size: 14px; -fx-underline: true;");
 
-        eyeIcon.setOnMouseClicked(e -> {
+        showPasswordLink.setOnAction(e -> {
             if (passwordField.getPromptText().equals("Enter your password")) {
                 TextField tempField = new TextField(passwordField.getText());
                 tempField.setPromptText("Enter your password");
                 tempField.setStyle(passwordField.getStyle());
+                passwordField.setVisible(false);
                 passwordBox.getChildren().set(0, tempField);
+                showPasswordLink.setText("Hide Password");
             } else {
                 passwordField.setText(((TextField) passwordBox.getChildren().get(0)).getText());
+                passwordField.setVisible(true);
                 passwordBox.getChildren().set(0, passwordField);
+                showPasswordLink.setText("Show Password");
             }
         });
 
-        passwordBox.getChildren().addAll(passwordField, eyeIcon);
+        passwordBox.getChildren().addAll(passwordField, showPasswordLink);
         passwordBox.setAlignment(Pos.CENTER_LEFT);
         passwordBox.setSpacing(10);
 
@@ -141,7 +138,6 @@ public class Login {
             loginButton.setStyle("-fx-background-color: #0096ff; -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: 600; -fx-font-family: 'K2D'; -fx-background-radius: 19px; -fx-padding: 15px 50px;");
         });
 
-
         HBox signupBox = new HBox(5);
         Text signupText = new Text("Don't have an account?");
         signupText.setFont(Font.font("Montserrat", FontWeight.SEMI_BOLD, 14));
@@ -151,7 +147,6 @@ public class Login {
         signupLink.setFont(Font.font("Montserrat", FontWeight.SEMI_BOLD, 14));
         signupLink.setStyle("-fx-text-fill: #0033ff; -fx-underline: true;");
         signupLink.setOnAction(e -> controller.showSignupPage());
-
 
         signupBox.getChildren().addAll(signupText, signupLink);
         signupBox.setAlignment(Pos.CENTER_LEFT);
@@ -167,21 +162,42 @@ public class Login {
 
         root1.setCenter(contentWrapper);
 
+        // Inside the loginButton.setOnAction method in Login.java
         loginButton.setOnAction(e -> {
-            String email = emailField.getText();
-            String password = passwordField.getText();
+            String email = emailField.getText().trim();
+            String password = passwordField.getText().trim();
 
-            if (UserLogin.authenticateUser(email, password)) {
-                System.out.println("Login successful! Redirecting...");
-                controller.showDashboard();
-                // Load hotel booking scene here
+            // Validate inputs
+            if (email.isEmpty() || password.isEmpty()) {
+                showAlert("Input Error", "Please enter both email and password.");
+            } else if (!isValidEmail(email)) {
+                showAlert("Input Error", "Invalid email format. Please use the format 'example@gmail.com'.");
+            } else if (!UserLogin.authenticateUser(email, password)) {
+                showAlert("Login Failed", "Incorrect email or password.");
             } else {
-                System.out.println("Invalid email or password.");
+                showAlert("Login Successful", "You have successfully logged in!");
+                controller.setLoggedInUserEmail(email); // Set the logged-in user's email
+                controller.showDashboard(); // Navigate to the dashboard
             }
         });
 
-
         root.getChildren().add(root1);
         return new Scene(root, 900, 600);
+    }
+
+    // Helper method to validate email format
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
+    }
+
+    // Helper method to show alerts
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

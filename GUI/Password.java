@@ -23,4 +23,3 @@ public class Password {
         return hashPassword(enteredPassword).equals(storedHashedPassword);
     }
 }
-

@@ -3,6 +3,7 @@ package Controller;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Label;
@@ -10,16 +11,12 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+
+import java.util.regex.Pattern;
 
 public class Signup {
     private MainController controller;
@@ -77,7 +74,7 @@ public class Signup {
         rightColumn.setAlignment(Pos.TOP_LEFT);
 
         // Signup Form
-        VBox signupForm = new VBox(20);
+        VBox signupForm = new VBox(10); // Reduced spacing
         signupForm.setAlignment(Pos.TOP_LEFT);
 
         // Header
@@ -106,47 +103,86 @@ public class Signup {
         formFields.setAlignment(Pos.TOP_LEFT);
 
         // Left Fields
-        VBox leftFields = new VBox(30);
+        VBox leftFields = new VBox(5); // Reduced spacing
         leftFields.setAlignment(Pos.TOP_LEFT);
+
+        // Username Label
+        Label usernameLabel = new Label("Username:");
+        usernameLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 800;");
 
         // Username Input
         TextField usernameInput = new TextField();
         usernameInput.setPrefSize(175, 38);
         usernameInput.setStyle("-fx-background-radius: 15px; -fx-font-size: 16px;");
 
-        // Email Label
-        Label emailLabel = new Label("Email:");
-        emailLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 800;");
-
-        leftFields.getChildren().addAll(usernameInput, emailLabel);
+        leftFields.getChildren().addAll(usernameLabel, usernameInput);
 
         // Right Fields
-        VBox rightFields = new VBox(28);
+        VBox rightFields = new VBox(5); // Reduced spacing
         rightFields.setAlignment(Pos.TOP_LEFT);
+
+        // Phone Number Label
+        Label phoneLabel = new Label("Phone Number:");
+        phoneLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 800;");
 
         // Phone Input
         TextField phoneInput = new TextField();
         phoneInput.setPrefSize(175, 38);
         phoneInput.setStyle("-fx-background-radius: 15px; -fx-font-size: 16px;");
 
-        rightFields.getChildren().add(phoneInput);
+        rightFields.getChildren().addAll(phoneLabel, phoneInput);
 
         formFields.getChildren().addAll(leftFields, rightFields);
 
         // Email Input
+        Label emailLabel = new Label("Email:");
+        emailLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 800;");
+
         TextField emailInput = new TextField();
         emailInput.setPrefSize(390, 38);
         emailInput.setPromptText("Ex: vath@gmail.com");
-        emailInput.setStyle("-fx-background-radius: 15px; -fx-font-size: 13px;");
+        emailInput.setStyle("-fx-background-radius: 15px; -fx-font-size: 16px;");
 
         // Password Label
         Label passwordLabel = new Label("Password:");
         passwordLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 800;");
 
         // Password Input
-        PasswordField passwordInput = new PasswordField();
-        passwordInput.setPrefSize(390, 41);
-        passwordInput.setStyle("-fx-background-radius: 15px; -fx-font-size: 16px;");
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPrefSize(390, 41);
+        passwordField.setStyle("-fx-background-radius: 15px; -fx-font-size: 16px;");
+
+        // Confirm Password Label
+        Label confirmPasswordLabel = new Label("Confirm Password:");
+        confirmPasswordLabel.setStyle("-fx-text-fill: white; -fx-font-size: 16px; -fx-font-weight: 800;");
+
+        // Confirm Password Input
+        PasswordField confirmPasswordField = new PasswordField();
+        confirmPasswordField.setPrefSize(390, 41);
+        confirmPasswordField.setStyle("-fx-background-radius: 15px; -fx-font-size: 16px;");
+
+        // Show Password Toggle
+        HBox passwordToggleBox = new HBox(10);
+        passwordToggleBox.setAlignment(Pos.CENTER_LEFT);
+
+        Button showPasswordButton = new Button("Show Password");
+        showPasswordButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #007bff; -fx-font-size: 14px; -fx-underline: true;");
+
+        showPasswordButton.setOnAction(e -> {
+            if (passwordField.getPromptText().equals("Enter your password")) {
+                TextField tempField = new TextField(passwordField.getText());
+                tempField.setPromptText("Enter your password");
+                tempField.setStyle(passwordField.getStyle());
+                passwordField.setVisible(false);
+                passwordToggleBox.getChildren().set(0, tempField);
+            } else {
+                passwordField.setText(((TextField) passwordToggleBox.getChildren().get(0)).getText());
+                passwordField.setVisible(true);
+                passwordToggleBox.getChildren().set(0, passwordField);
+            }
+        });
+
+        passwordToggleBox.getChildren().add(passwordField);
 
         // Terms Text
         Label termsText = new Label("By continuing you agree to our Terms of Service and Privacy Policy.");
@@ -160,11 +196,11 @@ public class Signup {
 
         // Change style on hover
         signupButton.setOnMouseEntered(event -> {
-        	signupButton.setStyle("-fx-background-color: #007ACC; -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: 600; -fx-font-family: 'K2D'; -fx-background-radius: 19px; -fx-padding: 10px 35px;");
+            signupButton.setStyle("-fx-background-color: #007ACC; -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: 600; -fx-font-family: 'K2D'; -fx-background-radius: 19px; -fx-padding: 10px 35px;");
         });
 
         signupButton.setOnMouseExited(event -> {
-        	signupButton.setStyle("-fx-background-color: #0096ff; -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: 600; -fx-font-family: 'K2D'; -fx-background-radius: 19px; -fx-padding: 10px 35px;");
+            signupButton.setStyle("-fx-background-color: #0096ff; -fx-text-fill: white; -fx-font-size: 24px; -fx-font-weight: 600; -fx-font-family: 'K2D'; -fx-background-radius: 19px; -fx-padding: 10px 35px;");
         });
 
         VBox buttonWrapper = new VBox();
@@ -190,7 +226,7 @@ public class Signup {
         loginSection.getChildren().addAll(loginText, loginLink);
 
         // Add all components to the form
-        signupForm.getChildren().addAll(header, signupSubtitle, formFields, emailInput, passwordLabel, passwordInput, termsText, signupButton, loginSection);
+        signupForm.getChildren().addAll(header, signupSubtitle, formFields, emailLabel, emailInput, passwordLabel, passwordToggleBox, confirmPasswordLabel, confirmPasswordField, termsText, signupButton, loginSection);
 
         // Add left and right columns to the layout
         twoColumnLayout.getChildren().addAll(leftColumn, signupForm);
@@ -205,22 +241,55 @@ public class Signup {
         signupContainer.getChildren().add(signupWrapper);
 
         signupButton.setOnAction(e -> {
-            String username = usernameInput.getText();
-            String email = emailInput.getText();
-            String phone = phoneInput.getText();
-            String password = passwordInput.getText();
+            String username = usernameInput.getText().trim();
+            String email = emailInput.getText().trim();
+            String phone = phoneInput.getText().trim();
+            String password = passwordField.getText().trim();
+            String confirmPassword = confirmPasswordField.getText().trim();
 
-            if (UserRegistration.registerUser(username, email, phone, password)) {
-                System.out.println("User registered successfully!");
-                controller.showDashboard();
+            // Validate inputs
+            if (username.isEmpty() || email.isEmpty() || phone.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+                showAlert("Input Error", "Please fill in all fields.");
+            } else if (!isValidEmail(email)) {
+                showAlert("Input Error", "Invalid email format. Please use the format 'example@gmail.com'.");
+            } else if (!isValidPhone(phone)) {
+                showAlert("Input Error", "Invalid phone number. Please enter a valid phone number.");
+            } else if (!password.equals(confirmPassword)) {
+                showAlert("Input Error", "Passwords do not match.");
+            } else if (UserRegistration.registerUser(username, email, phone, password)) {
+                showAlert("Signup Successful", "You have successfully signed up!");
+                controller.setLoggedInUserEmail(email); // Set the logged-in user's email
+                controller.showDashboard(); // Navigate to the dashboard
             } else {
-                System.out.println("Signup failed. Email may already exist.");
+                showAlert("Signup Failed", "Signup failed. Email may already exist.");
             }
         });
 
-
         // Set up the scene
         this.scene = new Scene(signupContainer, 900, 600);
+    }
+
+    // Helper method to validate email format
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        return pattern.matcher(email).matches();
+    }
+
+    // Helper method to validate phone number format
+    private boolean isValidPhone(String phone) {
+        String phoneRegex = "^[0-9]{10}$"; // Assumes a 10-digit phone number
+        Pattern pattern = Pattern.compile(phoneRegex);
+        return pattern.matcher(phone).matches();
+    }
+
+    // Helper method to show alerts
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     public Scene getScene() {

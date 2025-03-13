@@ -11,7 +11,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
+//import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 
@@ -52,6 +52,11 @@ public class Dashboard {
         Button viewBookingButton = createActionButton("View Booking");
         Button cancelBookingButton = createActionButton("Cancel Booking");
         Button exitButton = createExitButton("Exit");
+        
+        viewRoomsButton.setOnAction(e -> controller.showViewAllRooms());
+        viewBookingButton.setOnAction(e -> controller.showViewBooking());
+        cancelBookingButton.setOnAction(e -> controller.showCancelBooking());
+
 
         // Add components to sidebar
         sidebar.getChildren().addAll(logo, viewRoomsButton, viewBookingButton, cancelBookingButton, exitButton);
@@ -82,6 +87,7 @@ public class Dashboard {
         Button profileButton = createActionButton("Profile");
         
         aboutUsButton.setOnAction(e -> controller.showAboutUsPage());
+        profileButton.setOnAction(e-> controller.showprofile());
 
         navigation.getChildren().addAll(homeButton, aboutUsButton, profileButton);
 
@@ -164,6 +170,7 @@ public class Dashboard {
         ));
         
         button.setOnAction(e -> showExitConfirmation());
+        
 
         return button;
     }
